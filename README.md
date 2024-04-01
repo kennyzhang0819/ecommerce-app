@@ -1,3 +1,7 @@
+# Sources and inspirations:
+- https://github.com/safak/youtube/tree/react-shop-ui
+- Zara shop: https://www.zara.com/
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
