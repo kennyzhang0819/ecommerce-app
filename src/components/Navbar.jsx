@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
 import Badge from "@mui/material/Badge";
-import { Search, ShoppingCartOutlined } from "@mui/icons-material";
+import { ShoppingCartOutlined } from "@mui/icons-material";
 import styled from "styled-components";
 import { mobile } from "../responsive";
 import { Link } from "react-router-dom";
-import { fetchSearchProducts } from "../data";
+import { useSelector } from "react-redux";
 
 const Container = styled.div`
   height: 60px;
+  border-bottom: 1px solid #000;
   ${mobile({ height: "50px" })}
 `;
 
@@ -25,32 +25,12 @@ const Left = styled.div`
   align-items: center;
 `;
 
-const Language = styled.span`
-  font-size: 14px;
-  cursor: pointer;
-  ${mobile({ display: "none" })}
-`;
-
-const SearchContainer = styled.div`
-  border: 0.5px solid lightgray;
-  display: flex;
-  align-items: center;
-  margin-left: 25px;
-  padding: 5px;
-`;
-
-const Input = styled.input`
-  border: none;
-  ${mobile({ width: "50px" })}
-`;
-
 const Center = styled.div`
   flex: 1;
   text-align: center;
 `;
 
 const Logo = styled.h1`
-  font-weight: bold;
   ${mobile({ fontSize: "24px" })}
 `;
 const Right = styled.div`
@@ -69,36 +49,27 @@ const MenuItem = styled.div`
 `;
 
 const Navbar = () => {
-  const [searchedProducts, setSearchedProducts] = useState([]);
-  
-
-  const handleSearch = (e) => {
-    const key = e.target.value;
-    fetchSearchProducts(key).then(fetchedProducts => {
-      setSearchedProducts(fetchedProducts);
-    });
-  }
+  const cart = useSelector(state => state.cart)
+  const quantity = cart.quantity;
   return (
     <Container>
       <Wrapper>
         <Left>
-          <Language>EN</Language>
-          <SearchContainer>
-            <Input placeholder="Search" onChange={handleSearch}/>
-            <Search style={{ color: "gray", fontSize: 16 }} />
-          </SearchContainer>
+          <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Logo>BEST SHOP EVER</Logo>
+          </Link>
         </Left>
         <Center>
-          <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-          <Logo>BEST SHOP EVER</Logo>
-          </Link>
+          
         </Center>
         <Right>
+          <Link to="/cart" style={{ textDecoration: 'none', color: 'inherit' }}>
           <MenuItem>
-            <Badge badgeContent={4} color="primary">
+            <Badge badgeContent={quantity} color="black">
               <ShoppingCartOutlined />
             </Badge>
           </MenuItem>
+          </Link>
         </Right>
       </Wrapper>
     </Container>

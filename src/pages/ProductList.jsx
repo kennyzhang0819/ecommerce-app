@@ -3,9 +3,8 @@ import styled from "styled-components";
 import Navbar from "../components/Navbar";
 import Products from "../components/Products";
 import { mobile } from "../responsive";
-import { Search } from "@mui/icons-material";
-import { fetchSearchProducts } from "../data";
-
+import Slider from "../components/Slider";
+import Categories from "../components/Categories";
 const Container = styled.div``;
 
 const Title = styled.h1`
@@ -14,7 +13,6 @@ const Title = styled.h1`
 
 const FilterContainer = styled.div`
   display: flex;
-  justify-content: space-between;
 `;
 
 const Filter = styled.div`
@@ -24,21 +22,16 @@ const Filter = styled.div`
 
 const FilterText = styled.span`
   font-size: 20px;
-  font-weight: 600;
+  font-weight: 400;
   margin-right: 20px;
   ${mobile({ marginRight: "0px" })}
 `;
 
-const SearchContainer = styled.div`
-  border: 0.5px solid lightgray;
-  display: flex;
-  align-items: center;
-  margin-left: 25px;
-  padding: 5px;
-`;
 
 const Input = styled.input`
-  border: none;
+  border: 1px solid lightgray;
+  margin-right: 20px;
+  padding: 10px;
   ${mobile({ width: "50px" })}
 `;
 
@@ -51,14 +44,15 @@ const Option = styled.option``;
 
 const ProductList = () => {
   const [categories, setCategories] = useState([]);
-  const [filters, setFilters] = useState({});
-  const [search, setSearch] = useState([]);
+  const [filters, setFilters] = useState({'category': 'All'});
+  const [search, setSearch] = useState('');
 
   
   useEffect(() => {
     fetch('https://dummyjson.com/products/categories')
       .then(res => res.json())
       .then(data => {
+        data.unshift('All');
         setCategories(data);
       });
   }, []);
@@ -75,15 +69,14 @@ const ProductList = () => {
     const key = e.target.value;
     setSearch(key);
   }
-  
+
   return (
     <Container>
       <Navbar />
+      <Slider />
+      {/* <Categories /> */}
       <Title>{filters.category}</Title>
-      <SearchContainer>
-            <Input placeholder="Search" onChange={handleSearch}/>
-            <Search style={{ color: "gray", fontSize: 16 }} />
-          </SearchContainer>
+      
       <FilterContainer>
         <Filter>
           <FilterText>Filter by Category:</FilterText>
@@ -93,6 +86,10 @@ const ProductList = () => {
               <Option key={index} value={category}>{category}</Option>
             ))}
           </Select>
+        </Filter>
+        <Filter>
+          <FilterText>Search:</FilterText>
+            <Input placeholder="Search" onChange={handleSearch}/>
         </Filter>
       </FilterContainer>
       <Products cat={filters} search={search}/>

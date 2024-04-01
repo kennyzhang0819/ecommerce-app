@@ -1,7 +1,10 @@
 
 export const fetchProducts = (category) => {
-  return fetch(category ? `https://dummyjson.com/products/category/${category}` : 
-  "https://dummyjson.com/products")
+  const url = category === "All"
+    ? "https://dummyjson.com/products?limit=50"
+    : `https://dummyjson.com/products/category/${category}`;
+
+  return fetch(url)
     .then(res => res.json())
     .then(data => {
       return data.products.map(product => ({
@@ -12,6 +15,7 @@ export const fetchProducts = (category) => {
       }));
     });
 };
+
 
 export const fetchSingleProduct = (id) => {
   return fetch(`https://dummyjson.com/products/${id}`)
@@ -28,32 +32,17 @@ export const fetchSingleProduct = (id) => {
       };
     });
 };
-
-export const fetchSearchProducts = (key) => {
-  return fetch(`https://dummyjson.com/products/search?q=${key}`)
-    .then(res => res.json())
-    .then(data => {
-      return data.products.map(product => ({
-        id: product.id,
-        img: product.thumbnail,
-        title: product.title,
-        desc: product.description,
-      }));
-    });
-  };
-
-
 export const sliderItems = [
     {
       id: 1,
-      img: "https://i.ibb.co/XsdmR2c/1.png",
+      img: "https://i.ibb.co/cXFnLLV/3.png",
       title: "SUMMER SALE",
       desc: "DON'T COMPROMISE ON STYLE! GET FLAT 30% OFF FOR NEW ARRIVALS.",
       bg: "f5fafd",
     },
     {
       id: 2,
-      img: "https://i.ibb.co/DG69bQ4/2.png",
+      img: "https://i.ibb.co/cXFnLLV/3.png",
       title: "AUTUMN COLLECTION",
       desc: "DON'T COMPROMISE ON STYLE! GET FLAT 30% OFF FOR NEW ARRIVALS.",
       bg: "fcf1ed",

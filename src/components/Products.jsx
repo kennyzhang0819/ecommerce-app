@@ -15,8 +15,17 @@ const Products = ({cat, search}) => {
   
   useEffect(() => {
     const getProducts = async () => {
-      fetchProducts(cat.category).then(fetchedProducts => {
-        setProducts(fetchedProducts);
+      fetchProducts(cat.category)
+      .then(fetchedProducts => {
+        let filteredProducts = fetchedProducts;
+        if (search) {
+          filteredProducts = fetchedProducts.filter(
+            (product) =>
+              product.title.toLowerCase().includes(search.toLowerCase())
+            );
+        }
+
+        setProducts(filteredProducts);
       });
     }
     getProducts();

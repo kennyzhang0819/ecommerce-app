@@ -2,6 +2,10 @@ import { Add, Remove } from "@mui/icons-material";
 import styled from "styled-components";
 import Navbar from "../components/Navbar";
 import { mobile } from "../responsive";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { addProduct, removeProduct } from "../redux/cartRedux";
+import { useDispatch } from "react-redux";
 
 const Container = styled.div``;
 
@@ -24,21 +28,13 @@ const Top = styled.div`
 
 const TopButton = styled.button`
   padding: 10px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 200;
   cursor: pointer;
   border: ${(props) => props.type === "filled" && "none"};
   background-color: ${(props) =>
     props.type === "filled" ? "black" : "transparent"};
   color: ${(props) => props.type === "filled" && "white"};
-`;
-
-const TopTexts = styled.div`
-  ${mobile({ display: "none" })}
-`;
-const TopText = styled.span`
-  text-decoration: underline;
-  cursor: pointer;
-  margin: 0px 10px;
 `;
 
 const Bottom = styled.div`
@@ -65,7 +61,12 @@ const ProductDetail = styled.div`
 
 const Image = styled.img`
   width: 200px;
+  height: 140px;
+  object-fit: cover;
+  max-width: 100%;
+  max-height: 100%;
 `;
+
 
 const Details = styled.div`
   padding: 20px;
@@ -77,15 +78,6 @@ const Details = styled.div`
 const ProductName = styled.span``;
 
 const ProductId = styled.span``;
-
-const ProductColor = styled.div`
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background-color: ${(props) => props.color};
-`;
-
-const ProductSize = styled.span``;
 
 const PriceDetail = styled.div`
   flex: 1;
@@ -152,90 +144,74 @@ const Button = styled.button`
 `;
 
 const Cart = () => {
+  const cart = useSelector((state) => state.cart);
+  const dispatch = useDispatch();
+  const handleChange = (product, change) => {
+    if (change === "dec") {
+      const id = product.id;
+      dispatch(removeProduct({...product, id }));
+    } else {
+      const quantity = 1;
+      dispatch(addProduct({ ...product, quantity}))
+    }
+  }
   return (
     <Container>
       <Navbar />
       <Wrapper>
-        <Title>YOUR BAG</Title>
+        <Title>YOUR CART({cart.quantity})</Title>
         <Top>
-          <TopButton>CONTINUE SHOPPING</TopButton>
-          <TopTexts>
-            <TopText>Shopping Bag(2)</TopText>
-            <TopText>Your Wishlist (0)</TopText>
-          </TopTexts>
-          <TopButton type="filled">CHECKOUT NOW</TopButton>
+          <Link to="/products" style={{ textDecoration: 'none', color: 'inherit' }} >
+            <TopButton>CONTINUE SHOPPING</TopButton>
+          </Link>
+          
+          <TopButton type="filled">CHECKOUT</TopButton>
         </Top>
         <Bottom>
           <Info>
-            <Product>
+            {cart.products.map(product => (
+              <Product>
               <ProductDetail>
-                <Image src="https://hips.hearstapps.com/vader-prod.s3.amazonaws.com/1614188818-TD1MTHU_SHOE_ANGLE_GLOBAL_MENS_TREE_DASHERS_THUNDER_b01b1013-cd8d-48e7-bed9-52db26515dc4.png?crop=1xw:1.00xh;center,top&resize=480%3A%2A" />
+                <Image src={product.img} />
                 <Details>
                   <ProductName>
-                    <b>Product:</b> JESSIE THUNDER SHOES
+                    <b>Product:</b> {product.title}
                   </ProductName>
                   <ProductId>
-                    <b>ID:</b> 93813718293
+                    <b>ID:</b> {product.id}
                   </ProductId>
-                  <ProductColor color="black" />
-                  <ProductSize>
-                    <b>Size:</b> 37.5
-                  </ProductSize>
                 </Details>
               </ProductDetail>
               <PriceDetail>
                 <ProductAmountContainer>
-                  <Add />
-                  <ProductAmount>2</ProductAmount>
-                  <Remove />
+                  <Add onClick={()=>handleChange(product, "inc")}/>
+                  <ProductAmount>{product.quantity}</ProductAmount>
+                  <Remove onClick={()=>handleChange(product, "dec")}/>
                 </ProductAmountContainer>
-                <ProductPrice>$ 30</ProductPrice>
+                <ProductPrice>$ {product.price * product.quantity}</ProductPrice>
               </PriceDetail>
             </Product>
+            ))}
             <Hr />
-            <Product>
-              <ProductDetail>
-                <Image src="https://i.pinimg.com/originals/2d/af/f8/2daff8e0823e51dd752704a47d5b795c.png" />
-                <Details>
-                  <ProductName>
-                    <b>Product:</b> HAKURA T-SHIRT
-                  </ProductName>
-                  <ProductId>
-                    <b>ID:</b> 93813718293
-                  </ProductId>
-                  <ProductColor color="gray" />
-                  <ProductSize>
-                    <b>Size:</b> M
-                  </ProductSize>
-                </Details>
-              </ProductDetail>
-              <PriceDetail>
-                <ProductAmountContainer>
-                  <Add />
-                  <ProductAmount>1</ProductAmount>
-                  <Remove />
-                </ProductAmountContainer>
-                <ProductPrice>$ 20</ProductPrice>
-              </PriceDetail>
-            </Product>
+            
           </Info>
           <Summary>
             <SummaryTitle>ORDER SUMMARY</SummaryTitle>
             <SummaryItem>
               <SummaryItemText>Subtotal</SummaryItemText>
-              <SummaryItemPrice>$ 80</SummaryItemPrice>
+              <SummaryItemPrice>$ {cart.total}</SummaryItemPrice>
             </SummaryItem>
             <SummaryItem>
-              <SummaryItemText>Estimated Shipping</SummaryItemText>
-              <SummaryItemPrice>$ 5.90</SummaryItemPrice>
+              <SummaryItemText>Taxes</SummaryItemText>
+              <SummaryItemPrice>$ {(cart.total * 0.03).toFixed(2)}</SummaryItemPrice>
             </SummaryItem>
             <SummaryItem>
-              <SummaryItemText>Shipping Discount</SummaryItemText>
-              <SummaryItemPrice>$ -5.90</SummaryItemPrice>
+              <SummaryItemText>Discount</SummaryItemText>
+              <SummaryItemPrice>$ 0.00</SummaryItemPrice>
             </SummaryItem>
             <SummaryItem type="total">
               <SummaryItemText>Total</SummaryItemText>
-              <SummaryItemPrice>$ 80</SummaryItemPrice>
+              <SummaryItemPrice>$ {cart.total + cart.total * 0.03} </SummaryItemPrice>
             </SummaryItem>
             <Button>CHECKOUT NOW</Button>
           </Summary>
