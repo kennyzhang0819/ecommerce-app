@@ -4,7 +4,6 @@ import Navbar from "../components/Navbar";
 import Products from "../components/Products";
 import { mobile } from "../responsive";
 import Slider from "../components/Slider";
-import Categories from "../components/Categories";
 const Container = styled.div``;
 
 const Title = styled.h1`
